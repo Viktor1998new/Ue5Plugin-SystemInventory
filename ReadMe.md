@@ -1,5 +1,5 @@
 [![Epic game](https://img.shields.io/badge/epicgames-%23313131.svg?style=for-the-badge&logo=epicgames&logoColor=white)](https://www.unrealengine.com/marketplace/en-US/product/a91aca6f2ceb4237988335e01112d30e "Marketplace")
-[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/PABTJFJ9 "Discord")
+[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/dKNvjg2Tgg "Discord")
 [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/Viktor238854 "PayPall")
 
 #### Init
