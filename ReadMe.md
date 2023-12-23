@@ -30,7 +30,7 @@ ue5.3
 ``` Console
 git clone --branch=ue5.3 https://github.com/Viktor1998new/Ue-Plugin-SystemInventory.git Inventory
 ```
-
+********************
 * Setting Plugin
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/23.jpg)
@@ -39,6 +39,7 @@ git clone --branch=ue5.3 https://github.com/Viktor1998new/Ue-Plugin-SystemInvent
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/21.jpg)
 
+********************
 #### ItemActor class:
 The actor's logic includes two functions: "initData", which returns a read string and uses the "DataItem" function to obtain an associative array Map[Key (String), Value(String)], and "getData" function, which also uses the DataItem function, takes an associative array Map[Key (String), Value(String)] as input and returns data in a JSON-like format as a string.
 
@@ -63,8 +64,15 @@ The actor's logic includes two functions: "initData", which returns a read strin
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/5.jpg)
 
+********************
 #### InventoryComponent class: 
-* Contains an array of items 
+* Contains an array of items
+
+![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/27.png)
+
+virtual functions
+
+![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/28.png)
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/6.jpg)
 
@@ -167,6 +175,7 @@ This function is designed to recalculate the mass of an inventory. If the EInven
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/18.jpg)
 
+********************
 * InventoryGrid class: 
 The UInventoryGrid class is a user interface widget designed to display a player's inventory. It inherits from UPanelWidget and contains an array of inventory slots of type UInventoryGridSlot, as well as a reference to an inventory component of type UInventoryComponent.
 
@@ -187,6 +196,7 @@ The class also contains protected methods for adding and removing slots, handlin
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/19.jpg)
 
+********************
 * Lib Functions
 The method DataItem takes an associative array (TMap) with string key-value pairs as input and returns a string that represents this associative array in the format "key:value,key:value,...".
 
