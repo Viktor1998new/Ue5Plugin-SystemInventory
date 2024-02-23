@@ -6,7 +6,7 @@
 #include "Input/Reply.h"
 #include "BrowserAssetsWidget.generated.h"
 
-UCLASS()
+UCLASS(NotBlueprintable)
 class INVENTORYEDITOR_API UBrowserAssetsWidget : public UUserWidget
 {
 	GENERATED_BODY()

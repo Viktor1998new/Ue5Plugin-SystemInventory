@@ -10,7 +10,7 @@
 #include "Editor.h"
 #include "InventoryEditorStyle.h"
 #include "Inventory/ItemActor.h"
-#include "FItemAsset_Action.h"
+#include "ItemAsset_Action.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"

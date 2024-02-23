@@ -15,15 +15,12 @@
 #include "Components/ScaleBoxSlot.h"
 #include "Brushes/SlateColorBrush.h"
 
-bool HasInventoryFlag(EInventoryFlag Contains)
-{
-    return EnumHasAnyFlags((EInventoryFlag)UInventorySettings::Get()->InventoryFlags, Contains);
-}
+#define HasInventoryFlag(Flag) UInventorySettings::Get()->HasInventoryFlag(Flag)
 
 FReply UInventoryWidget::RecalculationMass()
 {
     if (HasInventoryFlag(EInventoryFlag::Mass))
-        MassText->SetText(FText::Format(FText::FromString("Mass: {0}"), FText::AsNumber(Inventory->CurrentMassa)));
+        MassText->SetText(FText::Format(FText::FromString("Mass: {0}"), FText::AsNumber(Inventory->Inventory.Massa)));
 
     return FReply::Handled();
 }
@@ -58,9 +55,12 @@ bool UInventoryWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
     if (Panel != 1)
         return false;
 
-    if (auto Operation = Cast<UEditor_DragNewItem>(InOperation)) {
-        int32 L_Index;
-        return Inventory->AddSlot(Operation->Slot, true, L_Index);
+    if (auto Operation = Cast<UEditor_Drag>(InOperation)) {
+
+        if (Operation->NewItem) {
+            int32 L_Index;
+            return Inventory->AddSlot(Operation->Slot, true, L_Index);
+        }
     }
 
     return false;
@@ -76,7 +76,7 @@ void UInventoryWidget::SetInventory(UInventoryComponent* NewInventory, uint8 New
 
     if (HasInventoryFlag(EInventoryFlag::Mass)) {
         Recalculation->SetVisibility(EVisibility::Visible);
-        MassText->SetText(FText::Format(FText::FromString("Mass: {0}"), FText::AsNumber(Inventory->CurrentMassa)));
+        MassText->SetText(FText::Format(FText::FromString("Mass: {0}"), FText::AsNumber(Inventory->Inventory.Massa)));
     }
     else {
         Recalculation->SetVisibility(EVisibility::Hidden);

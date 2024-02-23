@@ -18,9 +18,9 @@ void UInventoryList::SetInventory(UInventoryComponent* NewInventory)
 
 	if (!IsValid(NewInventory)) return;
 	
-	if (Inventory->Items.Num() == 0) return;
+	if (Inventory->CountItems() == 0) return;
 
-	for (int i = 0; i < Inventory->Items.Num(); i++) AddSlot(i);
+	for (int i = 0; i < Inventory->CountItems(); i++) AddSlot(i);
 
 }
 
@@ -68,11 +68,11 @@ void UInventoryList::ChangeSlots(int32 Index, FInventorySlot NewData, ETypeSetIt
 
 		RemoveChild(ItemSlots.Last()->Content);
 
-		if (Inventory->Items.Num() == 0)
+		if (Inventory->CountItems() == 0)
 			return;
 
 		for (int32 i = Index; i < ItemSlots.Num(); i++) {
-			FInventorySlot L_Slot = Inventory->Items[i];
+			FInventorySlot L_Slot = Inventory->GetItem(i);
 			ItemSlots[i]->ChangeSlot(L_Slot);
 			SetSlotPosition(ItemSlots[i], SizeSlot * i);
 		}

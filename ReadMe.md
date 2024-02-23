@@ -33,6 +33,8 @@ git clone --branch=ue5.3 https://github.com/Viktor1998new/Ue-Plugin-SystemInvent
 ********************
 * Setting Plugin
 
+![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/Setting.gif)
+
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/23.jpg)
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/22.jpg)

@@ -6,7 +6,7 @@
 #include "Input/Reply.h"
 #include "InventoryWidget.generated.h"
 
-UCLASS()
+UCLASS(NotBlueprintable)
 class INVENTORYEDITOR_API UInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()

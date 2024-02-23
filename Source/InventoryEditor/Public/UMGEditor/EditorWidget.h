@@ -9,7 +9,7 @@
 
 class UInventoryWidget;
 
-UCLASS()
+UCLASS(NotBlueprintable)
 class INVENTORYEDITOR_API UEditorWidget : public UUserWidget
 {
 	GENERATED_BODY()

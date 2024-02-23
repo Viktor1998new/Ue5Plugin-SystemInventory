@@ -61,14 +61,12 @@ void UInventoryPanelSlot::SetIndexItem(int32 NewIndex)
 
 	IndexItem = NewIndex;
 
-	OnChangedSlot.Broadcast(IndexItem, ParentPanel->Inventory->Items[IndexItem]);
+	OnChangedSlot.Broadcast(IndexItem, ParentPanel->Inventory->GetItem(IndexItem));
 }
 
 void UInventoryPanelSlot::SynchronizeProperties() {
 
 	if (IndexItem == INDEX_NONE || !Slot) return;
 
-	FInventorySlot L_Slot = ParentPanel->Inventory->Items[IndexItem];
-	FIntPoint L_SlotSize = L_Slot.GetSize();
-	OnChangedSlot.Broadcast(IndexItem, ParentPanel->Inventory->Items[IndexItem]);
+	OnChangedSlot.Broadcast(IndexItem, ParentPanel->Inventory->GetItem(IndexItem));
 }

@@ -37,4 +37,9 @@ public:
     static UInventorySettings* Get() {
         return FInventoryModule::Get().GetSettings();
     }
+
+    bool HasInventoryFlag(EInventoryFlag Contains)
+    {
+        return EnumHasAnyFlags<EInventoryFlag>((EInventoryFlag)InventoryFlags, Contains);
+    }
 };

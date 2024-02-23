@@ -13,13 +13,8 @@ public:
 		: DisallowedClassFlags(CLASS_None), bDisallowBlueprintBase(false)
 	{}
 
-	/** All children of these classes will be included unless filtered out by another setting. */
 	TSet< const UClass* > AllowedChildrenOfClasses;
-
-	/** Disallowed class flags. */
 	EClassFlags DisallowedClassFlags;
-
-	/** Disallow blueprint base classes. */
 	bool bDisallowBlueprintBase;
 
 	virtual bool IsClassAllowed(const FClassViewerInitializationOptions& InInitOptions, const UClass* InClass, TSharedRef< FClassViewerFilterFuncs > InFilterFuncs) override
@@ -58,13 +53,10 @@ UItemAssetFactory::UItemAssetFactory(const FObjectInitializer& ObjectInitializer
 }
 
 bool UItemAssetFactory::ConfigureProperties() {
-	// nullptr the DataAssetClass so we can check for selection
-	ItemAssetClass = nullptr;
 
-	// Load the classviewer module to display a class picker
+	ItemAssetClass = nullptr;
 	FClassViewerModule& ClassViewerModule = FModuleManager::LoadModuleChecked<FClassViewerModule>("ClassViewer");
 
-	// Fill in options
 	FClassViewerInitializationOptions Options;
 	Options.Mode = EClassViewerMode::ClassPicker;
 	Options.ExtraPickerCommonClasses.Add(UItemAsset::StaticClass());
@@ -95,7 +87,6 @@ UObject* UItemAssetFactory::FactoryCreateNew(UClass* Class, UObject* InParent, F
 	}
 	else
 	{
-		// if we have no data asset class, use the passed-in class instead
 		check(Class->IsChildOf(UItemAsset::StaticClass()));
 		return NewObject<UItemAsset>(InParent, Class, Name, Flags);
 	}

@@ -14,7 +14,7 @@ struct INVENTORY_API FInventorySlot
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Slot")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Slot")
 		UItemAsset* ItemAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|Slot")
@@ -27,11 +27,11 @@ struct INVENTORY_API FInventorySlot
 		int32 Count;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory|Slot")
-		bool IsRotate;
+		bool IsRotate = false;
 
 	bool IsPosition(FIntPoint Position, FIntPoint Size);
 
-	bool operator == (const FInventorySlot& A) {
+	bool operator == (const FInventorySlot& A) const {
 
 		return ItemAsset == A.ItemAsset && ItemData == A.ItemData;
 	}
@@ -44,18 +44,7 @@ struct INVENTORY_API FInventorySlot
 		Count--;
 	}
 
-	FIntPoint GetSize()
-	{
-		if (!IsValid(ItemAsset))
-			return FIntPoint::ZeroValue;
-
-		FIntPoint L_ReturnValue = ItemAsset->SlotItemData.SizeSlot;
-
-		if (IsRotate)
-			return FIntPoint(L_ReturnValue.Y, L_ReturnValue.X);
-
-		return L_ReturnValue;
-	}
+	FIntPoint GetSize();
 };
 
 USTRUCT(BlueprintType)
@@ -63,18 +52,19 @@ struct INVENTORY_API FInventory
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
+	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly, Category = "Inventory")
 		TArray<FInventorySlot> Items;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
+	UPROPERTY(VisibleInstanceOnly,BlueprintReadOnly, Category = "Inventory")
 		float Massa;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
-		FIntPoint MaxSlot;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Inventory")
+		int CountRow;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Inventory")
+		int MaxSlot;
 
 	FInventory();
-
-	FInventory(class UInventoryComponent* InventoryComponent);
 };
 
 UENUM(BlueprintType)
@@ -98,19 +88,13 @@ class INVENTORY_API UInventoryComponent : public UActorComponent {
 public:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Replicated, Category = "Inventory")
-	TArray<FInventorySlot> Items;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Replicated, Category = "Inventory")
-	float CurrentMassa;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Slot")
-	FIntPoint MaxSlot;
+		FInventory Inventory;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnAddItem OnAddItem;
+		FOnAddItem OnAddItem;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnRemoveItem OnRemoveItem;
+		FOnRemoveItem OnRemoveItem;
 
 	FNewDataSlot NewDataSlot;
 
@@ -121,15 +105,23 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void SetInventory(FInventory NewInventory) {
-		Items = NewInventory.Items;
-		CurrentMassa = NewInventory.Massa;
-		MaxSlot = NewInventory.MaxSlot;
+		Inventory = NewInventory;
 	};
 
 
 	UFUNCTION(BlueprintPure, Category = "Inventory")
 	FInventory GetInventory() {
-		return FInventory(this);
+		return Inventory;
+	};
+
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+	FInventorySlot& GetItem(int32 Index) {
+		return Inventory.Items[Index];
+	};
+	
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+	int32 CountItems() {
+		return Inventory.Items.Num();
 	};
 
 	/*Adding a slot
@@ -193,6 +185,9 @@ public:
 protected:
 	void ChangeSlot(int32 Index, FInventorySlot Slot, ETypeSetItem Type);
 
+private:
+	int GetCountRow(bool IsEnd) const;
+
 };
 
 
@@ -205,16 +200,16 @@ public:
 	virtual bool SetSlot(int32 Index, FInventorySlot NewValue) override {
 
 		float DelMass = 0, AddMass = 0;
-		if (Items[Index].ItemAsset != NewValue.ItemAsset || Items[Index].Count != NewValue.Count) {
-			DelMass = Items[Index].ItemAsset->SlotItemData.MassItem * Items[Index].Count;
+		if (Inventory.Items[Index].ItemAsset != NewValue.ItemAsset || Inventory.Items[Index].Count != NewValue.Count) {
+			DelMass = Inventory.Items[Index].ItemAsset->SlotItemData.MassItem * Inventory.Items[Index].Count;
 			AddMass = NewValue.ItemAsset->SlotItemData.MassItem * NewValue.Count;
 		}
 
 		bool Is_Seted = ReceiveSetSlot(Index, NewValue);
 
 		if (Is_Seted) {
-			CurrentMassa -= DelMass;
-			CurrentMassa += AddMass;
+			Inventory.Massa -= DelMass;
+			Inventory.Massa += AddMass;
 			ChangeSlot(Index, NewValue, ETypeSetItem::ChangeSlot);
 		}
 
@@ -227,7 +222,7 @@ public:
 
 		if (L_IsAdding) {
 			OnAddItem.Broadcast(Index);
-			CurrentMassa += NewSlot.ItemAsset->SlotItemData.MassItem * NewSlot.Count;
+			Inventory.Massa += NewSlot.ItemAsset->SlotItemData.MassItem * NewSlot.Count;
 			ChangeSlot(Index, NewSlot, ETypeSetItem::Add);
 		}
 

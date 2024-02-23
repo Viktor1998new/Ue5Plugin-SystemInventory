@@ -21,22 +21,21 @@ void UInventoryGrid::SetInventory(UInventoryComponent* NewInventory)
 	if (!IsValid(NewInventory))
 		return;
 
-	if (NoneSlot && Inventory->MaxSlot != FIntPoint::ZeroValue) {
+	if (NoneSlot && Inventory->Inventory.MaxSlot != 0) {
 		if (EnumHasAnyFlags((EInventoryFlag)UInventorySettings::Get()->InventoryFlags, EInventoryFlag::OnlyX)) {
-			for (int32 X = 0; X < Inventory->MaxSlot.X; X++)
+			for (int32 X = 0; X < Inventory->Inventory.MaxSlot; X++)
 				AddNoneSlot(FIntPoint(X, 0));
 		}
 		else {
-			for (int32 Y = 0; Y < Inventory->MaxSlot.Y; Y++)
-				for (int32 X = 0; X < Inventory->MaxSlot.X; X++)
-					AddNoneSlot(FIntPoint(X, Y));
+			for (int32 Y = 0; Y < Inventory->Inventory.MaxSlot; Y++)
+					AddNoneSlot(FIntPoint(Y % Inventory->Inventory.CountRow, Y / Inventory->Inventory.CountRow));
 		}
 	}
 
-	if (Inventory->Items.Num() != 0) {
+	if (Inventory->CountItems() != 0) {
 
-		for (int32 i = 0; i < Inventory->Items.Num(); i++)
-			if (Inventory->Items[i].ItemAsset)
+		for (int32 i = 0; i < Inventory->CountItems(); i++)
+			if (Inventory->GetItem(i).ItemAsset)
 				AddSlot(i);
 	}
 }
@@ -46,14 +45,14 @@ void UInventoryGrid::AddNoneSlot(FIntPoint Position)
 	UUserWidget* WidgetSlot = CreateWidget<UUserWidget>(this, NoneSlot);
 	UInventoryPanelSlot* NewSlot = Cast<UInventoryPanelSlot>(Super::AddChild(WidgetSlot));
 	SetSlotTranstrorm(NewSlot, Position, E_Position);
-	SetSlotTranstrorm(NewSlot, FIntPoint(1, 1) ,E_Size);
+	SetSlotTranstrorm(NewSlot, FIntPoint(1) ,E_Size);
 }
 
 void UInventoryGrid::AddSlot(int32 IndexItem)
 {
 	UUserWidget* WidgetSlot = CreateWidget<UUserWidget>(this,ItemSlot);
 	UInventoryPanelSlot* NewSlot = Cast<UInventoryPanelSlot>(Super::AddChild(WidgetSlot));
-	FInventorySlot L_ItemSlot = Inventory->Items[IndexItem];
+	FInventorySlot L_ItemSlot = Inventory->GetItem(IndexItem);
 	SetSlotTranstrorm(NewSlot, L_ItemSlot.PositionSlot, E_Position);
 	SetSlotTranstrorm(NewSlot, L_ItemSlot.GetSize(), E_Size);
 	NewSlot->SetIndexItem(IndexItem);
@@ -120,11 +119,11 @@ void UInventoryGrid::ChangeSlots(int32 Index, FInventorySlot NewData, ETypeSetIt
 
 		RemoveChild(ItemSlots.Last()->Content);
 
-		if (Inventory->Items.Num() == 0)
+		if (Inventory->CountItems() == 0)
 			return;
 
 		for (int32 i = Index; i < ItemSlots.Num(); i++) {
-			FInventorySlot L_Slot = Inventory->Items[i];
+			FInventorySlot L_Slot = Inventory->GetItem(i);
 			ItemSlots[i]->ChangeSlot(L_Slot);
 			SetSlotTranstrorm(ItemSlots[i], L_Slot.PositionSlot, E_Position);
 			SetSlotTranstrorm(ItemSlots[i], L_Slot.GetSize(), E_Size);
