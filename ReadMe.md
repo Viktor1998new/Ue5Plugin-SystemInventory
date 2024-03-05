@@ -33,38 +33,34 @@ git clone --branch=ue5.3 https://github.com/Viktor1998new/Ue-Plugin-SystemInvent
 ********************
 * Setting Plugin
 
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/Setting.gif)
-
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/23.jpg)
 
 ![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/22.jpg)
 
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/21.jpg)
+[Watch the video](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/assets/62036206/641712bb-e713-40ad-850d-a80ec54182d9)
+
+* Editor inventory
+#### Drag and drop item: LMB
+#### Menu item: RMB
+#### Rotate item: Drag + Left Shift
+[Watch the video](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/assets/62036206/eef027cd-7de8-40ee-95b5-cf65071eb1fc)
 
 ********************
 #### ItemActor class:
 The actor's logic includes two functions: "initData", which returns a read string and uses the "DataItem" function to obtain an associative array Map[Key (String), Value(String)], and "getData" function, which also uses the DataItem function, takes an associative array Map[Key (String), Value(String)] as input and returns data in a JSON-like format as a string.
 
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/1.jpg)
-
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/3.png)
-
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/26.png)
+[Watch the video](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/assets/62036206/847daf69-43a8-4a49-8e0d-914c92543ed0)
 
 #### ItemAsset Class:
 * The UItemAsset class is derived from the UPrimaryDataAsset class and declared using the UCLASS(BlueprintType, Blueprintable) macros for use in material graphs and Blueprint scripts.
+
+[Watch the video](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/assets/62036206/2509ede6-6129-46a7-80e4-bae3e0743e06)
 
 #### This class has two properties:
 
 * ClassItemActor - an object of type TSubclassOf<AItemActor> that contains a reference to the AItemActor class that represents this item in the game. This property is set through the Unreal Editor and is read-only.
 
 * SlotItemData - a structure FItemData that contains item data that will be saved in the inventory slot when placing this item in the slot. This data can also be viewed and modified through the Unreal Editor. The property is read-only.
-
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/25.jpg)
-
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/0.jpg)
-
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/5.jpg)
 
 ********************
 #### InventoryComponent class: 
