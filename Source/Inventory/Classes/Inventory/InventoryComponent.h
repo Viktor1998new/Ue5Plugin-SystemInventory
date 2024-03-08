@@ -87,7 +87,7 @@ class INVENTORY_API UInventoryComponent : public UActorComponent {
 
 public:
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Replicated, Category = "Inventory")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Inventory")
 		FInventory Inventory;
 
 	UPROPERTY(BlueprintAssignable)

@@ -489,16 +489,14 @@ TSharedRef<SWidget> UMenuContextItemWidget::RebuildWidget()
 		L_NewSlotItem.Count = L_NewSlotItem.ItemAsset->SlotItemData.StackItem ? ItemSettings->Count : 1;
 		L_NewSlotItem.IsRotate = L_SlotItem.IsRotate;
 
-		bool IsSet = Inventory->SetSlot(Index, L_NewSlotItem);
-
-		if (!IsSet) {
+		if (!Inventory->SetSlot(Index, L_NewSlotItem)) {
 
 			ItemSettings->Asset = L_SlotItem.ItemAsset;
+			ItemSettings->Count = L_SlotItem.Count;
 			ItemSettings->Data = UInventoryLibrary::DataItemToMap(L_SlotItem.ItemData);
+			return;
 		}
-
-		ItemSettings->Count = L_SlotItem.Count;
-		});
+	});
 
 
 	return SNew(SBox)[
