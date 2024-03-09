@@ -236,7 +236,6 @@ TSharedRef<SWidget> USlotItemWidget::HandleGetMenuContent()
 	UInventoryPanel* Panel = Cast<UInventoryPanel>(GetParent());
 
 	ContextMenu = CreateWidget<UMenuContextItemWidget>(this);
-
 	return ContextMenu->TakeWidget();
 }
 
@@ -442,7 +441,14 @@ void UMenuContextItemWidget::SetItem(TSharedPtr<class SMenuAnchor> MewMenu, UInv
 	FInventorySlot L_SlotItem = NewInventory->GetItem(NewIndex);
 
 	ItemSettings->Asset = L_SlotItem.ItemAsset;
-	ItemSettings->Data = UInventoryLibrary::DataItemToMap(L_SlotItem.ItemData);
+
+	if (UInventoryLibrary::GetDataCpp(L_SlotItem).IsEmpty()) {
+		ItemSettings->Data = UInventoryLibrary::GetJsonString(L_SlotItem.ItemAsset->StructType);
+	}
+	else {
+		ItemSettings->Data = L_SlotItem.ItemData;
+	}
+
 	ItemSettings->Count = L_SlotItem.Count;
 
 	Inventory = NewInventory;
@@ -484,7 +490,7 @@ TSharedRef<SWidget> UMenuContextItemWidget::RebuildWidget()
 		FInventorySlot L_SlotItem = Inventory->GetItem(Index);
 		FInventorySlot L_NewSlotItem;
 		L_NewSlotItem.ItemAsset = ItemSettings->Asset;
-		L_NewSlotItem.ItemData = UInventoryLibrary::DataItem(ItemSettings->Data);
+		L_NewSlotItem.ItemData = ItemSettings->Data;
 		L_NewSlotItem.PositionSlot = L_SlotItem.PositionSlot;
 		L_NewSlotItem.Count = L_NewSlotItem.ItemAsset->SlotItemData.StackItem ? ItemSettings->Count : 1;
 		L_NewSlotItem.IsRotate = L_SlotItem.IsRotate;
@@ -493,7 +499,14 @@ TSharedRef<SWidget> UMenuContextItemWidget::RebuildWidget()
 
 			ItemSettings->Asset = L_SlotItem.ItemAsset;
 			ItemSettings->Count = L_SlotItem.Count;
-			ItemSettings->Data = UInventoryLibrary::DataItemToMap(L_SlotItem.ItemData);
+
+			if (UInventoryLibrary::GetDataCpp(L_SlotItem).IsEmpty()) {
+				ItemSettings->Data = UInventoryLibrary::GetJsonString(L_SlotItem.ItemAsset->StructType);
+			}
+			else {
+				ItemSettings->Data = L_SlotItem.ItemData;
+			}
+
 			return;
 		}
 	});
@@ -569,27 +582,6 @@ void USlotItemListWidget::OnChangedSlot(int32 NewIndex, FInventorySlot NewSlot)
 			Text_Name.ToSharedRef()->SetText(FText::FromString("No Name"));
 		else
 			Text_Name.ToSharedRef()->SetText(Asset->SlotItemData.NameItem);
-
-		auto L_Data = UInventoryLibrary::DataItemToMap(NewSlot.ItemData);
-
-		FString StringResult;
-		TArray<FString> Keys;
-		L_Data.GetKeys(Keys);
-
-		if (Keys.IsValidIndex(0)) {
-			for (int32 i = 0; i < L_Data.Num(); i++) {
-
-				FString AddValue = FString("Name: ") + Keys[i] + " " + FString("Value: ") + L_Data[Keys[i]];
-
-				if (L_Data.Num() == (i + 1))
-					StringResult += AddValue;
-				else
-					StringResult += AddValue + ",";
-			}
-			Text_Data.ToSharedRef()->SetText(FText::FromString(StringResult));
-		}
-		else
-			Text_Data.ToSharedRef()->SetText(FText::FromString("No Data"));
 
 		Image.ToSharedRef()->SetImage(Brush);
 	}

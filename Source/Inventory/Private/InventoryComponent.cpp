@@ -191,7 +191,7 @@ bool UInventoryComponent::AddAssetItem(UItemAsset* ItemAsset, int32 Count, const
 		
 		int32 FindIndex = INDEX_NONE;
 
-		if (ItemAsset->SlotItemData.NoneData) {
+		if (!IsValid(ItemAsset->StructType)) {
 			for (int32 i = 0; i < Inventory.Items.Num(); i++) {
 				if (Inventory.Items[i].ItemAsset == ItemAsset){
 					FindIndex = i;

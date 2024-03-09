@@ -27,9 +27,6 @@ struct INVENTORY_API FItemData
 		bool StackItem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|ItemActor|Slot")
-		bool NoneData = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory|ItemActor|Slot")
 		int32 MaxStack = 1;
 };
 
@@ -45,6 +42,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemAsset")
 		FItemData SlotItemData;
+		
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemAsset")
+		UScriptStruct* StructType;
 	 
 };
 

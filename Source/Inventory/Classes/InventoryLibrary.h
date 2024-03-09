@@ -2,6 +2,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "UObject/Script.h"
+#include "JsonUtilities/Public/JsonObjectConverter.h"
 #include "UObject/ObjectMacros.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Inventory/Classes/Inventory/InventoryComponent.h"
@@ -13,15 +14,30 @@ class INVENTORY_API UInventoryLibrary : public UBlueprintFunctionLibrary
     GENERATED_BODY()
 
 public:
-    ///** Starts an analytics session without any custom attributes specified */
-    UFUNCTION(BlueprintCallable, Category = "InventoryLibrary")
-        static FString DataItem(TMap<FString,FString> MapDataItem);
+    
+    UFUNCTION(BlueprintCallable, CustomThunk, meta = (CustomStructureParam = "NewValue"), Category = "InventoryLibrary")
+        static void SetData(UPARAM(ref) FInventorySlot& Slot, const  UScriptStruct* NewValue);
+    
+    DECLARE_FUNCTION(execSetData);
 
-    UFUNCTION(BlueprintCallable, Category = "InventoryLibrary")
-      static TMap<FString, FString> DataItemToMap(FString DataItem);
+    UFUNCTION(BlueprintPure, CustomThunk, meta = (CustomStructureParam = "OutStruct"))
+        static bool GetData(const FInventorySlot StructType, int32& OutStruct);
 
-    UFUNCTION(BlueprintCallable, Category = "InventoryLibrary")
-        static TMap<FString, FString> DataItemSetValue(TMap<FString, FString> MapDataItem, FString Key, FString NewValue);
+    DECLARE_FUNCTION(execGetData);
+
+    static FString GetDataCpp(const FInventorySlot Slot);
+
+    static FString GetJsonString(UScriptStruct* Struct);
+
+    UFUNCTION(BlueprintPure, CustomThunk, meta = (CustomStructureParam = "Struct"))
+        static FString StructToJson(UScriptStruct* Struct);
+    
+    DECLARE_FUNCTION(execStructToJson);
+
+    UFUNCTION(BlueprintPure, CustomThunk, meta = (CustomStructureParam = "OutStruct"))
+        static bool JsonToStruct(const FString& Json, int32& OutStruct);
+
+    DECLARE_FUNCTION(execJsonToStruct);
 
     UFUNCTION(BlueprintPure, Category = "InventoryLibrary")
         static FIntPoint GetSlotSize(FInventorySlot Slot);

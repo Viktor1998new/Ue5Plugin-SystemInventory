@@ -18,8 +18,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "AssetData")
 	class UItemAsset* Asset;
 
-	UPROPERTY(EditAnywhere, Category = "AssetData")
-	TMap<FString, FString> Data;
+	UPROPERTY(EditAnywhere, Category = "AssetData", meta = (MultiLine = "true"))
+	FString Data;
 
 	UPROPERTY(EditAnywhere, Category = "AssetData", meta = (ClampMin = 1))
 	int32 Count;

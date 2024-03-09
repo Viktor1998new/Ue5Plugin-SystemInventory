@@ -2,56 +2,155 @@
 #include "InventoryLibrary.h"
 #include "InventorySettings.h"
 
-FString UInventoryLibrary::DataItem(TMap<FString, FString> MapDataItem){
-
-	TArray<FString> L_ReturnValue; 
-
-	TArray<FString> Keys;
-
-	MapDataItem.GetKeys(Keys);
-
-	for (FString Key : Keys) {
-
-		TArray<FString> NewValue;
-
-		NewValue.Add(Key);
-		NewValue.Add(MapDataItem[Key]);
-
-		L_ReturnValue.Add(FString::Join(NewValue,TEXT(":")));
-	}
-
-	return FString::Join(L_ReturnValue, TEXT(","));
+void UInventoryLibrary::SetData(UPARAM(ref) FInventorySlot& Slot, const UScriptStruct* NewValue)
+{
+	checkNoEntry();
 }
 
-TMap<FString, FString> UInventoryLibrary::DataItemToMap(FString DataItem) {
+DEFINE_FUNCTION(UInventoryLibrary::execSetData)
+{
+	P_GET_STRUCT_REF(FInventorySlot, Slot);
 
-	TMap<FString, FString> L_ReturnValue;
+	Stack.Step(Stack.Object, NULL);
+	FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+	void* StructPtr = Stack.MostRecentPropertyAddress;
+	P_FINISH;
 
-	TArray<FString> SeparatedStrings;
-
-	DataItem.ParseIntoArray(SeparatedStrings, TEXT(","), true);
-
-	for (FString Value : SeparatedStrings) {
-
-		TArray<FString> NewMap;
-
-		Value.ParseIntoArray(NewMap, TEXT(":"), true);
-		
-		if(NewMap.IsValidIndex(1))
-			L_ReturnValue.Add(NewMap[0], NewMap[1]);
-	}
-
-	return L_ReturnValue;
+	P_NATIVE_BEGIN;
+	FJsonObjectConverter::UStructToJsonObjectString(StructProperty->Struct, StructPtr, Slot.ItemData);
+	P_NATIVE_END;
 }
 
-TMap<FString, FString> UInventoryLibrary::DataItemSetValue(TMap<FString, FString> MapDataItem, FString Key, FString NewValue) {
+bool UInventoryLibrary::GetData(const FInventorySlot Slot, int32& OutStruct)
+{
+	checkNoEntry();
+    return false;
+}
 
-	FString * ValueKey = MapDataItem.Find(Key);
 
-	if (ValueKey != nullptr)
-		MapDataItem[Key] = NewValue;
+DEFINE_FUNCTION(UInventoryLibrary::execGetData)
+{
+	P_GET_STRUCT(FInventorySlot, Slot);
+	Stack.MostRecentPropertyAddress = nullptr;
+	Stack.StepCompiledIn<FStructProperty>(nullptr);
+	void* StructPtr = Stack.MostRecentPropertyAddress;
+	FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
 
-	return MapDataItem;
+	P_FINISH
+		bool bSuccess = false;
+
+	if (!IsValid(Slot.ItemAsset)) {
+		bSuccess = false;
+		*static_cast<bool*>(RESULT_PARAM) = bSuccess;
+		return;
+	}
+
+	if ((StructProperty != nullptr) && (StructProperty->Struct != nullptr) && (StructProperty->Struct == Slot.ItemAsset->StructType) && (StructPtr != nullptr))
+	{
+		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+		TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Slot.ItemData);
+		if (!FJsonSerializer::Deserialize(JsonReader, JsonObject) || !JsonObject.IsValid())
+		{
+			bSuccess = false;
+			*static_cast<bool*>(RESULT_PARAM) = bSuccess;
+			return;
+		}
+		bSuccess = FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), Slot.ItemAsset->StructType, StructPtr, 0, 0);
+	}
+	*static_cast<bool*>(RESULT_PARAM) = bSuccess;
+}
+
+FString UInventoryLibrary::GetDataCpp(const FInventorySlot Slot)
+{
+	if (!IsValid(Slot.ItemAsset) || !IsValid(Slot.ItemAsset->StructType) || Slot.ItemData.IsEmpty()) {
+		return FString();
+	}
+
+	FString Return_Value;
+
+	if(FJsonObjectConverter::UStructToJsonObjectString(Slot.ItemAsset->StructType->GetSuperStruct(), Slot.ItemAsset->StructType, Return_Value, 0, 0)) {
+
+		return Return_Value;
+	}
+
+	return FString();
+}
+
+FString UInventoryLibrary::GetJsonString(UScriptStruct* Struct)
+{
+	if (!IsValid(Struct))
+		return FString();
+
+	uint8* DefaultStructInstance = (uint8*)FMemory::Malloc(Struct->GetStructureSize());
+	Struct->InitializeDefaultValue(DefaultStructInstance);
+	
+	FString L_Return;
+
+	if (FJsonObjectConverter::UStructToJsonObjectString(Struct, DefaultStructInstance, L_Return, 0, 0)) {
+
+		FMemory::Free(DefaultStructInstance);
+		return L_Return;
+	}
+
+	FMemory::Free(DefaultStructInstance);
+	return FString();
+
+}
+
+FString UInventoryLibrary::StructToJson(UScriptStruct* Struct)
+{
+	checkNoEntry();
+	return FString();
+}
+
+bool UInventoryLibrary::JsonToStruct(const FString& Json, int32& OutStruct)
+{
+	checkNoEntry();
+	return false;
+}
+
+
+DEFINE_FUNCTION(UInventoryLibrary::execJsonToStruct)
+{
+	P_GET_PROPERTY(FStrProperty, Json);
+	
+	Stack.MostRecentPropertyAddress = nullptr;
+	Stack.StepCompiledIn<FStructProperty>(nullptr);
+	void* StructPtr = Stack.MostRecentPropertyAddress;
+	FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+
+	P_FINISH
+		bool bSuccess = false;
+
+	if (!Json.IsEmpty())
+	{
+		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
+		TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Json);
+		if (!FJsonSerializer::Deserialize(JsonReader, JsonObject) || !JsonObject.IsValid())
+		{
+			bSuccess = false;
+			*static_cast<bool*>(RESULT_PARAM) = bSuccess;
+			return;
+		}
+		bSuccess = FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), StructProperty->Struct, StructPtr, 0, 0);
+	}
+	*static_cast<bool*>(RESULT_PARAM) = bSuccess;
+}
+
+
+DEFINE_FUNCTION(UInventoryLibrary::execStructToJson)
+{
+	Stack.MostRecentPropertyAddress = nullptr;
+	Stack.StepCompiledIn<FStructProperty>(nullptr);
+	void* StructPtr = Stack.MostRecentPropertyAddress;
+	FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
+
+	P_FINISH
+
+	FString L_Return;
+
+	FJsonObjectConverter::UStructToJsonObjectString(StructProperty->Struct, StructPtr, L_Return, 0, 0);
+	* static_cast<FString*>(RESULT_PARAM) = L_Return;
 }
 
 FIntPoint UInventoryLibrary::GetSlotSize(FInventorySlot Slot)
