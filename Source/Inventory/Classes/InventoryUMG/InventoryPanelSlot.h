@@ -1,10 +1,11 @@
-//Copyright(c) 2022, Viktor.F.P
+//Copyright(c) 2022 - 2024, Viktor.F.P
 #pragma once
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/ScriptMacros.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
 #include "Layout/Margin.h"
+#include "UObject/Interface.h"
 #include "Components/PanelSlot.h"
 #include "Inventory/InventoryComponent.h"
 #include "InventoryPanelSlot.generated.h"
@@ -27,9 +28,9 @@ public:
 
 };
 
-class UInventoryPanel;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChangedSlot, int32, Index, FInventorySlot, Slot);
+
+class UInventoryPanel;
 
 UCLASS()
 class INVENTORY_API UInventoryPanelSlot : public UPanelSlot

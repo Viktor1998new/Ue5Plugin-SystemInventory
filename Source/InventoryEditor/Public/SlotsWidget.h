@@ -1,13 +1,15 @@
-//Copyright(c) 2022, Viktor.F.P
+//Copyright(c) 2022 - 2024, Viktor.F.P
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
 #include "Inventory/InventoryComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "InventoryUMG/PanelInventorySlotInterface.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
 #include "SlotsWidget.generated.h"
+
+static float SizeSlot = 32.f;
 
 UCLASS()
 class INVENTORYEDITOR_API UItemSettings : public UObject
@@ -78,7 +80,7 @@ protected:
 };
 
 UCLASS()
-class INVENTORYEDITOR_API USlotItemWidget : public USlotWidget
+class INVENTORYEDITOR_API USlotItemWidget : public USlotWidget, public IPanelInventorySlotInterface
 {
 	GENERATED_BODY()
 
@@ -100,14 +102,14 @@ public:
 	void SetVisible();
 protected:
 
-	virtual void NativePreConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, Category = "InventoryPanel|Slot")
 	void OnChangedSlot(int32 NewIndex, FInventorySlot NewSlot);
+	virtual void OnChangedSlot_Implementation(int32 NewIndex, FInventorySlot NewSlot) override;
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
@@ -189,7 +191,7 @@ protected:
 
 
 UCLASS()
-class INVENTORYEDITOR_API USlotItemListWidget : public USlotWidget
+class INVENTORYEDITOR_API USlotItemListWidget : public USlotWidget, public IPanelInventorySlotInterface
 {
 	GENERATED_BODY()
 
@@ -204,13 +206,14 @@ public:
 	UMenuContextItemWidget* ContextMenu;
 
 	FMargin GetOffsetMouse() const;
+
 protected:
 
-	virtual void NativePreConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, Category = "InventoryPanel|Slot")
 	void OnChangedSlot(int32 NewIndex, FInventorySlot NewSlot);
+	virtual void OnChangedSlot_Implementation(int32 NewIndex, FInventorySlot NewSlot) override;
 
 	TSharedPtr<class SImage> Image;
 	TSharedPtr<class STextBlock> Text_Name;

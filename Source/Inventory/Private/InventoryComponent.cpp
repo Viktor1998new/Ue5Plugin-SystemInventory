@@ -1,4 +1,4 @@
-//Copyright(c) 2022, Viktor.F.P
+//Copyright(c) 2022 - 2024, Viktor.F.P
 
 #include "Inventory/InventoryComponent.h"
 #include "InventorySettings.h"

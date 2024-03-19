@@ -1,7 +1,8 @@
-//Copyright(c) 2022, Viktor.F.P
+//Copyright(c) 2022 - 2024, Viktor.F.P
 #pragma once
 #include "InventoryUMG/InventoryPanelSlot.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
+#include "InventoryUMG/PanelInventorySlotInterface.h"
 #include "InventoryUMG/InventoryPanel.h"
 
 UInventoryPanelSlot::UInventoryPanelSlot(const FObjectInitializer& ObjectInitializer)
@@ -23,6 +24,8 @@ void UInventoryPanelSlot::SetMargin(FMargin NewMargin) {
 void UInventoryPanelSlot::ChangeSlot(FInventorySlot NewData) {
 
 	OnChangedSlot.Broadcast(IndexItem, NewData);
+
+	IPanelInventorySlotInterface::Execute_OnChangedSlot(Content, IndexItem, NewData);
 }
 
 void UInventoryPanelSlot::BuildSlot(TSharedRef<SConstraintCanvas> GridPanel)
@@ -60,13 +63,12 @@ void UInventoryPanelSlot::SetIndexItem(int32 NewIndex)
 	if (NewIndex == INDEX_NONE || !Slot) return;
 
 	IndexItem = NewIndex;
-
-	OnChangedSlot.Broadcast(IndexItem, ParentPanel->Inventory->GetItem(IndexItem));
+	ChangeSlot(ParentPanel->Inventory->GetItem(IndexItem));
 }
 
 void UInventoryPanelSlot::SynchronizeProperties() {
 
 	if (IndexItem == INDEX_NONE || !Slot) return;
 
-	OnChangedSlot.Broadcast(IndexItem, ParentPanel->Inventory->GetItem(IndexItem));
+	ChangeSlot(ParentPanel->Inventory->GetItem(IndexItem));
 }

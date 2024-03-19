@@ -1,4 +1,4 @@
-//Copyright(c) 2022, Viktor.F.P
+//Copyright(c) 2022 - 2024, Viktor.F.P
 
 #include "ItemAssetFactory.h"
 #include "Inventory/ItemActor.h"
