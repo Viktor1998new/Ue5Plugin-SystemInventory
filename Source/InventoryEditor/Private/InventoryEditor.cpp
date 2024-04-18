@@ -98,11 +98,11 @@ TSharedRef<SDockTab> FInventoryEditorModule::OnRegisterBrowserAssetsTab(const FS
 		.TabRole(ETabRole::NomadTab)
 		[
 			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-		.HAlign(HAlign_Fill)
-		[
-			BrowserAssetsTab->TakeWidget()
-		]
+				+ SVerticalBox::Slot()
+				.HAlign(HAlign_Fill)
+				[
+					BrowserAssetsTab->TakeWidget()
+				]
 		];
 }
 

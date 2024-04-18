@@ -58,17 +58,18 @@ TSharedRef<SWidget> UMenuContextItemWidget::RebuildWidget()
 			return;
 
 		FInventorySlot L_SlotItem = Inventory->GetItem(Index);
-		FInventorySlot L_NewSlotItem;
+		FInventorySlot L_NewSlotItem = L_SlotItem;
 		L_NewSlotItem.ItemAsset = ItemSettings->Asset;
 		L_NewSlotItem.ItemData = ItemSettings->Data;
-		L_NewSlotItem.PositionSlot = L_SlotItem.PositionSlot;
+
+		if(ItemSettings->Asset->SlotItemData.MaxStack < ItemSettings->Count)
+			ItemSettings->Count = ItemSettings->Asset->SlotItemData.MaxStack;
+
 		L_NewSlotItem.Count = L_NewSlotItem.ItemAsset->SlotItemData.StackItem ? ItemSettings->Count : 1;
-		L_NewSlotItem.IsRotate = L_SlotItem.IsRotate;
 
 		if (!Inventory->SetSlot(Index, L_NewSlotItem)) {
 
 			ItemSettings->Asset = L_SlotItem.ItemAsset;
-			ItemSettings->Count = L_SlotItem.Count;
 
 			if (UInventoryLibrary::GetDataCpp(L_SlotItem).IsEmpty()) {
 				ItemSettings->Data = UInventoryLibrary::GetJsonString(L_SlotItem.ItemAsset->StructType);

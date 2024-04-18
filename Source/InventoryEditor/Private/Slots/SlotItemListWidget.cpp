@@ -59,7 +59,7 @@ TSharedRef<SWidget> USlotItemListWidget::HandleGetMenuContent()
 	UInventoryPanel* Panel = Cast<UInventoryPanel>(GetParent());
 
 	ContextMenu = CreateWidget<UMenuContextItemWidget>(this);
-
+	ContextMenu->SetItem(MenuAnchor, Cast<UInventoryPanel>(GetParent())->Inventory, Item_Index);
 	return ContextMenu->TakeWidget();
 }
 

@@ -59,10 +59,10 @@ struct INVENTORY_API FInventory
 		float Massa;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Inventory")
-		int32 CountRow;
+		int CountRow;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Inventory")
-		int32 MaxSlot;
+		int MaxSlot;
 
 	FInventory();
 };
@@ -96,8 +96,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FOnRemoveItem OnRemoveItem;
 
-	UPROPERTY(BlueprintAssignable)
-		FNewDataSlot NewDataSlot;
+	FNewDataSlot NewDataSlot;
 
 	// Sets default values for this component's properties
 	UInventoryComponent();
@@ -115,13 +114,20 @@ public:
 		return Inventory;
 	};
 
-	UFUNCTION(BlueprintPure, Category = "Inventory")
+	UFUNCTION(BlueprintPure, Category = "Inventory|Item")
 	FInventorySlot& GetItem(int32 Index) {
+
+		checkf((Index >= 0) & (Index < Inventory.Items.Num()), TEXT("Array index out of bounds: %i from an array of size %i"), Index, Inventory.Items.Num())
 		return Inventory.Items[Index];
 	};
 	
-	UFUNCTION(BlueprintPure, Category = "Inventory")
-	int32 CountItems() const {
+	UFUNCTION(BlueprintPure, Category = "Inventory|Item")
+	bool IsValidIndex(int32 Index) {
+		return Inventory.Items.IsValidIndex(Index);
+	};
+	
+	UFUNCTION(BlueprintPure, Category = "Inventory|Item")
+	int32 CountItems() {
 		return Inventory.Items.Num();
 	};
 
@@ -163,16 +169,6 @@ public:
 	 Use only in Server*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 		bool SendItem(int32 Index, class UInventoryComponent* ToIntentory, int32 Count, bool FindSlot, FIntPoint Position);
-
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-		void SetMaxSlot(int32 NewValue) {
-			Inventory.MaxSlot = NewValue;
-		}
-
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-		void SetCountRow(int32 NewValue) {
-			Inventory.CountRow = NewValue;
-		}
 
 	/*the function checks whether the element can be placed in this position*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")

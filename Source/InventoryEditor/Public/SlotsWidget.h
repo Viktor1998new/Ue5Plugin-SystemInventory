@@ -213,6 +213,7 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "InventoryPanel|Slot")
 	void OnChangedSlot(int32 NewIndex, FInventorySlot NewSlot);
+
 	virtual void OnChangedSlot_Implementation(int32 NewIndex, FInventorySlot NewSlot) override;
 
 	TSharedPtr<class SImage> Image;

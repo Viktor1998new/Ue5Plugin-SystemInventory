@@ -18,7 +18,7 @@
 
 TSharedRef<SWidget> UEditorWidget::RebuildWidget()
 {
-    FSlateColorBrush* BrushButtons =new  FSlateColorBrush(FLinearColor(0.0f, 0.0f, 0.0f));
+    FSlateColorBrush* BrushButtons = new  FSlateColorBrush(FLinearColor(0.0f, 0.0f, 0.0f));
     FSlateColorBrush* MyBrush = new FSlateColorBrush(FLinearColor(0.07f, 0.07f, 0.07f));
 
     FSlateFontInfo ButtonFont = FCoreStyle::GetDefaultFontStyle("Roboto", 12);
@@ -42,58 +42,69 @@ TSharedRef<SWidget> UEditorWidget::RebuildWidget()
 
     TSharedPtr<SHorizontalBox> ButtonsPanel = SNew(SHorizontalBox)
         + SHorizontalBox::Slot()
-            .FillWidth(1.0f)
-            .HAlign(HAlign_Left)
-            .VAlign(VAlign_Fill)
-            [
-                ButtonList.ToSharedRef()
-            ]
+        .FillWidth(1.0f)
+        .HAlign(HAlign_Left)
+        .VAlign(VAlign_Fill)
+        [
+            ButtonList.ToSharedRef()
+        ]
 
         + SHorizontalBox::Slot()
-            .FillWidth(1.0f)
-            .HAlign(HAlign_Left)
-            .VAlign(VAlign_Fill)
-            [
-                ButtonGrid.ToSharedRef()
-            ];
+        .FillWidth(1.0f)
+        .HAlign(HAlign_Left)
+        .VAlign(VAlign_Fill)
+        [
+            ButtonGrid.ToSharedRef()
+        ];
 
 
     TSharedPtr<SBorder> L_Border = SNew(SBorder)
         .BorderImage(MyBrush)
         .Content()[
             SNew(SVerticalBox)
+                + SVerticalBox::Slot()[
+                    SNew(SVerticalBox)
+                        + SVerticalBox::Slot()
+                        .AutoHeight()
+                        .VAlign(VAlign_Fill)
+                        .HAlign(HAlign_Fill)
+                        [
+                            SNew(SBorder)
+                                .BorderImage(BrushButtons)
+                                .Content()[
+
+                                    ButtonsPanel.ToSharedRef()
+                                ].HAlign(HAlign_Right)
+                        ]
+
+                        + SVerticalBox::Slot()
+                        .AutoHeight()
+                        .VAlign(VAlign_Fill)
+                        .HAlign(HAlign_Fill)[
+                            SNew(SSpacer)
+                                .Size(FVector2D(1.0f, 9.0f))
+                        ]
+
+                        + SVerticalBox::Slot()
+                        .FillHeight(1.0f)
+                        .VAlign(VAlign_Fill)
+                        .HAlign(HAlign_Fill)[
+                            SNew(SScrollBox)
+                                + SScrollBox::Slot()
+                                .HAlign(HAlign_Fill)
+                                .VAlign(VAlign_Fill)[
+                                    SAssignNew(ListInventory, SVerticalBox)
+                                ]
+                        ]
+                ]
                 + SVerticalBox::Slot()
                 .AutoHeight()
-                .VAlign(VAlign_Fill)
-                .HAlign(HAlign_Fill)
-                [
-                    SNew(SBorder)
-                    .BorderImage(BrushButtons)
-                .Content()[
-
-                    ButtonsPanel.ToSharedRef()
-                ].HAlign(HAlign_Right)
-           ]
-
-            + SVerticalBox::Slot()
-                .AutoHeight()
-                .VAlign(VAlign_Fill)
+                .VAlign(VAlign_Bottom)
                 .HAlign(HAlign_Fill)[
-                    SNew(SSpacer)
-                        .Size(FVector2D(1.0f, 9.0f))
+                    SNew(STextBlock)
+                        .Font(ButtonFont)
+                        .Text(FText::FromString("Drag: LMB, Menu: RMB, Rotate item: Drag + Left Shift"))
                 ]
-
-            + SVerticalBox::Slot()
-                    .FillHeight(1.0f)
-                    .VAlign(VAlign_Fill)
-                    .HAlign(HAlign_Fill)[
-                        SNew(SScrollBox)
-                            + SScrollBox::Slot()
-                            .HAlign(HAlign_Fill)
-                            .VAlign(VAlign_Fill)[
-                                SAssignNew(ListInventory,SVerticalBox)
-                    ]
-                 ]
         ];
 
     MyPanel = SNew(SConstraintCanvas)
