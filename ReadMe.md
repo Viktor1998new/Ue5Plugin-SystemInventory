@@ -2,10 +2,6 @@
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/dKNvjg2Tgg "Discord")
 [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/Viktor238854 "PayPall")
 
-#### Init
-D:\NameProject\Plugins
-![Image](https://github.com/Viktor1998new/Ue-Plugin-SystemInventory/blob/Experiment/Images/24.png)
-
 ue4.27
 ``` Console
 git clone --branch=ue4.27 https://github.com/Viktor1998new/Ue-Plugin-SystemInventory.git Inventory
