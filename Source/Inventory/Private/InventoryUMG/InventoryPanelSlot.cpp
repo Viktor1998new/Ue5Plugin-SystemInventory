@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 #pragma once
 #include "InventoryUMG/InventoryPanelSlot.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
@@ -22,9 +22,6 @@ void UInventoryPanelSlot::SetMargin(FMargin NewMargin) {
 }
 
 void UInventoryPanelSlot::ChangeSlot(FInventorySlot NewData) {
-
-	OnChangedSlot.Broadcast(IndexItem, NewData);
-
 	IPanelInventorySlotInterface::Execute_OnChangedSlot(Content, IndexItem, NewData);
 }
 

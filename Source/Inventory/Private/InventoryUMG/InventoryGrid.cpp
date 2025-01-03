@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 
 #include "InventoryUMG/InventoryGrid.h"
 #include "InventoryUMG/InventoryPanelSlot.h"

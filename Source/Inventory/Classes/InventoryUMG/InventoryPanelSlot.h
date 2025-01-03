@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 #pragma once
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
@@ -28,8 +28,6 @@ public:
 
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChangedSlot, int32, Index, FInventorySlot, Slot);
-
 class UInventoryPanel;
 
 UCLASS()
@@ -49,9 +47,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "InventoryPanel|Slot")
 		int32 ZOrder = 0;
-
-	UPROPERTY(BlueprintAssignable)
-		FOnChangedSlot OnChangedSlot;
 
     void BuildSlot(TSharedRef<SConstraintCanvas> GridPanel);
 
