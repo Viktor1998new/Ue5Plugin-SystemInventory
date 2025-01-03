@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 #include "SlotsWidget.h"
 #include "InventoryUMG/InventoryPanelSlot.h"
 #include "InventoryUMG/InventoryPanel.h"

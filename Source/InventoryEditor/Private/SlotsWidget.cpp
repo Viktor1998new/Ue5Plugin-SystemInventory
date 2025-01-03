@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 #include "SlotsWidget.h"
 #include "InventoryUMG/InventoryPanel.h"
 #include "Brushes/SlateColorBrush.h"
@@ -10,7 +10,6 @@ UInventoryComponent* USlotWidget::GetInventory()
 
 void UVisualDragWidget::SetItem(UTexture2D* Texture, FVector2D Size)
 {
-
 	if (SizeBox.IsValid()) {
 		SizeBox.ToSharedRef()->SetWidthOverride(Size.X);
 		SizeBox.ToSharedRef()->SetHeightOverride(Size.Y);

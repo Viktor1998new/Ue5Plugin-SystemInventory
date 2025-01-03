@@ -23,7 +23,9 @@ public class InventoryEditor : ModuleRules
 				"MainFrame",
                 "UMGEditor",
                 "AssetTools",
-                "UnrealEd"
+                "UnrealEd",
+                "Json",
+                "JsonUtilities",
             }
 		);
 

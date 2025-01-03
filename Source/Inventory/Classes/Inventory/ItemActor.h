@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 
 #pragma once
 #include "CoreMinimal.h"
@@ -39,12 +39,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemAsset")
 		TSubclassOf<AItemActor> ClassItemActor;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemAsset")
-		FItemData SlotItemData;
 		
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemAsset")
 		UScriptStruct* StructType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemAsset")
+		FItemData SlotItemData;
 	 
 };
 

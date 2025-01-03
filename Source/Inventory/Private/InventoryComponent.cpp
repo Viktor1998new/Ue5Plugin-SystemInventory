@@ -1,4 +1,4 @@
-//Copyright(c) 2022 - 2024, Viktor.F.P
+//Copyright(c) 2022 - 2025, Viktor.F.P
 
 #include "Inventory/InventoryComponent.h"
 #include "InventorySettings.h"
@@ -225,6 +225,7 @@ bool UInventoryComponent::AddAssetItem(UItemAsset* ItemAsset, int32 Count, const
 
 	FInventorySlot NewSlot;
 	NewSlot.ItemAsset = ItemAsset;
+	NewSlot.ItemData = Data;
 	NewSlot.Count = Count;
 	
 	return AddSlot(NewSlot, true, Index);

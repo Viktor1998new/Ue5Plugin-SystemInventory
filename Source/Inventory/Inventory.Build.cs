@@ -14,7 +14,6 @@ public class Inventory : ModuleRules
 				"Core",
                 "Json",
                 "JsonUtilities",
-				// ... add other public dependencies that you statically link with here ...
 			}
 			);
 			
@@ -27,7 +26,6 @@ public class Inventory : ModuleRules
 				"Slate",
 				"SlateCore",
 				"UMG",
-				// ... add private dependencies that you statically link with here ...	
 			}
 			);
 	}
