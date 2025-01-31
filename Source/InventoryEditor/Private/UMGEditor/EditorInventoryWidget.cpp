@@ -1,6 +1,6 @@
 //Copyright(c) 2022 - 2025, Viktor.F.P
 
-#include "UMGEditor/EditorWidget.h"
+#include "UMGEditor/EditorInventoryWidget.h"
 #include "UMGEditor/InventoryWidget.h"
 
 #include "InventorySettings.h"
@@ -16,7 +16,7 @@
 #include "Widgets/Layout/SScrollBox.h"
 #include "Brushes/SlateColorBrush.h"
 
-TSharedRef<SWidget> UEditorWidget::RebuildWidget()
+TSharedRef<SWidget> UEditorInventoryWidget::RebuildWidget()
 {
     FSlateColorBrush* BrushButtons = new  FSlateColorBrush(FLinearColor(0.0f, 0.0f, 0.0f));
     FSlateColorBrush* MyBrush = new FSlateColorBrush(FLinearColor(0.07f, 0.07f, 0.07f));
@@ -24,7 +24,7 @@ TSharedRef<SWidget> UEditorWidget::RebuildWidget()
     FSlateFontInfo ButtonFont = FCoreStyle::GetDefaultFontStyle("Roboto", 12);
 
     TSharedPtr<SButton> ButtonList = SNew(SButton)
-        .OnClicked_UObject(this, &UEditorWidget::SwitchList)
+        .OnClicked_UObject(this, &UEditorInventoryWidget::SwitchList)
         .Content()[
             SNew(STextBlock)
                 .Font(ButtonFont)
@@ -32,7 +32,7 @@ TSharedRef<SWidget> UEditorWidget::RebuildWidget()
         ];
 
     TSharedPtr<SButton> ButtonGrid = SNew(SButton)
-        .OnClicked_UObject(this, &UEditorWidget::SwitchGrid)
+        .OnClicked_UObject(this, &UEditorInventoryWidget::SwitchGrid)
         .Content()[
             SNew(STextBlock)
                 .Font(ButtonFont)
@@ -118,14 +118,14 @@ TSharedRef<SWidget> UEditorWidget::RebuildWidget()
 	return MyPanel.ToSharedRef();
 }
 
-void UEditorWidget::PostRename(UObject* OldOuter, const FName OldName)
+void UEditorInventoryWidget::PostRename(UObject* OldOuter, const FName OldName)
 {
     CurrentSelectActors.Empty();
     ListInventory->ClearChildren();
     Inventorys.Empty();
 }
 
-void UEditorWidget::NativeConstruct()
+void UEditorInventoryWidget::NativeConstruct()
 {
     UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
  
@@ -140,7 +140,7 @@ void UEditorWidget::NativeConstruct()
     OnSelectHandle = Selection->SelectionChangedEvent.AddUFunction(this, FName("OnSelect"));
 }
 
-void UEditorWidget::NativeDestruct()
+void UEditorInventoryWidget::NativeDestruct()
 {
     CurrentSelectActors.Empty();
     ListInventory->ClearChildren();
@@ -155,7 +155,7 @@ void UEditorWidget::NativeDestruct()
     Selection->SelectionChangedEvent.Remove(OnSelectHandle);
 }
 
-void UEditorWidget::OnSelect(UObject* NewSelect)
+void UEditorInventoryWidget::OnSelect(UObject* NewSelect)
 {
     TArray<UObject*> L_Select = GetSelectedActors();
 
@@ -231,11 +231,11 @@ void UEditorWidget::OnSelect(UObject* NewSelect)
     }
 }
 
-void UEditorWidget::OnNoneSelect() {
+void UEditorInventoryWidget::OnNoneSelect() {
     OnSelect(nullptr);
 }
 
-void UEditorWidget::AddSelect(TArray<UObject*> NewSelectActors)
+void UEditorInventoryWidget::AddSelect(TArray<UObject*> NewSelectActors)
 {
     for (auto& NewSelect : NewSelectActors) {
 
@@ -264,7 +264,7 @@ void UEditorWidget::AddSelect(TArray<UObject*> NewSelectActors)
     CurrentSelectActors = NewSelectActors;
 }
 
-void UEditorWidget::RemoveSelect(TArray<UObject*> NewSelectActors)
+void UEditorInventoryWidget::RemoveSelect(TArray<UObject*> NewSelectActors)
 {
     for (auto& Select : CurrentSelectActors) {
 
@@ -287,14 +287,14 @@ void UEditorWidget::RemoveSelect(TArray<UObject*> NewSelectActors)
     CurrentSelectActors = NewSelectActors;
 }
 
-void UEditorWidget::ReleaseSlateResources(bool bReleaseChildren)
+void UEditorInventoryWidget::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
 
 	MyPanel.Reset();
 }
 
-FReply UEditorWidget::SwitchList()
+FReply UEditorInventoryWidget::SwitchList()
 {
     Panel = 1;
     for (auto& Element : Inventorys) {
@@ -304,7 +304,7 @@ FReply UEditorWidget::SwitchList()
     return FReply::Handled();
 }
 
-FReply UEditorWidget::SwitchGrid()
+FReply UEditorInventoryWidget::SwitchGrid()
 {
     Panel = 0;
     for (auto& Element : Inventorys) {
@@ -314,7 +314,7 @@ FReply UEditorWidget::SwitchGrid()
     return FReply::Handled();
 }
 
-TArray<UObject*> UEditorWidget::GetSelectedActors()
+TArray<UObject*> UEditorInventoryWidget::GetSelectedActors()
 {
     UEditorEngine* EditorEngine = Cast<UEditorEngine>(GEngine);
     if (!EditorEngine)

@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "UMG/Public/Blueprint/UserWidget.h"
 #include "Input/Reply.h"
-#include "EditorWidget.generated.h"
+#include "EditorInventoryWidget.generated.h"
 
 class UInventoryWidget;
 
 UCLASS(NotBlueprintable)
-class INVENTORYEDITOR_API UEditorWidget : public UUserWidget
+class INVENTORYEDITOR_API UEditorInventoryWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

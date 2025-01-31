@@ -2,25 +2,19 @@
 
 #include "InventoryEditor.h"
 #include "CoreMinimal.h"
-
 #include "Widgets/SWindow.h"
-#include "UMGEditor/EditorWidget.h"
+#include "UMGEditor/EditorInventoryWidget.h"
 #include "UMGEditor/BrowserAssetsWidget.h"
 #include "LevelEditor.h"
 #include "Editor.h"
 #include "InventoryEditorStyle.h"
-#include "Inventory/ItemActor.h"
 #include "ItemAsset_Action.h"
 #include "Widgets/Docking/SDockTab.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
-#include "UObject/UnrealType.h"
-#include "AssetTypeCategories.h"
-#include "Modules/ModuleManager.h"
-#include "AssetToolsModule.h"
-#include "IAssetTools.h"
 
 IMPLEMENT_MODULE(FInventoryEditorModule, InventoryEditorModule);
+
+static const FName TabInventoryName = "Inventory";
+static const FName TabBrowserAssetsName = "BrowserAssets";
 
 #define LOCTEXT_NAMESPACE "InventoryEditor"
 
@@ -36,7 +30,7 @@ void FInventoryEditorModule::StartupModule()
 	AssetTools.RegisterAssetTypeActions(AssetTypeActions);
 
 	FLevelEditorModule& LevelEditor = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
-	LevelEditor.OnMapChanged().AddRaw(this, &FInventoryEditorModule::ChangeTabWorld);
+	HandleChangeTabWorld = LevelEditor.OnMapChanged().AddRaw(this, &FInventoryEditorModule::ChangeTabWorld);
 
 	TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
 	MenuExtender->AddMenuExtension(
@@ -48,14 +42,12 @@ void FInventoryEditorModule::StartupModule()
 	LevelEditor.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
 
 	FInventoryEditorStyle::Get();
-        
 }
 
 void FInventoryEditorModule::AddMenuEntry(FMenuBuilder& MenuBuilder)
 {
 	MenuBuilder.BeginSection("InventoryMenu", TAttribute<FText>(FText::FromString("Inventory")));
 	{
-		// Create a Submenu inside of the Section
 		MenuBuilder.AddMenuEntry(FText::FromString("Editor Inventory"),
 			FText::FromString("Open Inventory Editor"),
 			FSlateIcon(),
@@ -66,17 +58,11 @@ void FInventoryEditorModule::AddMenuEntry(FMenuBuilder& MenuBuilder)
 
 void FInventoryEditorModule::RegisterEditor() {
 	
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner("InventoryEditorTabName", FOnSpawnTab::CreateRaw(this, &FInventoryEditorModule::OnSpawnPluginTab))
-	.SetDisplayName(LOCTEXT("InventoryEditor", "InventoryEditor"))
-	.SetMenuType(ETabSpawnerMenuType::Hidden);
-
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner("Inventory", FOnSpawnTab::CreateRaw(this, &FInventoryEditorModule::OnRegisterInventoryTab))
-	.SetDisplayName(LOCTEXT("Inventory", "Inventory"))
-	.SetMenuType(ETabSpawnerMenuType::Hidden);
-
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner("BrowserAssets", FOnSpawnTab::CreateRaw(this, &FInventoryEditorModule::OnRegisterBrowserAssetsTab))
-	.SetDisplayName(LOCTEXT("BrowserAssets", "BrowserAssets"))
-	.SetMenuType(ETabSpawnerMenuType::Hidden);
+	if (!TabManager.IsValid()) {
+		FGlobalTabmanager::Get()->RegisterNomadTabSpawner("InventoryEditorTabName", FOnSpawnTab::CreateRaw(this, &FInventoryEditorModule::OnSpawnPluginTab))
+			.SetDisplayName(LOCTEXT("InventoryEditor", "InventoryEditor"))
+			.SetMenuType(ETabSpawnerMenuType::Hidden);
+	}
 
 	FGlobalTabmanager::Get()->TryInvokeTab(FTabId("InventoryEditorTabName"));
 }
@@ -94,8 +80,8 @@ TSharedRef<SDockTab> FInventoryEditorModule::OnRegisterBrowserAssetsTab(const FS
 		BrowserAssetsTab = CreateWidget<UBrowserAssetsWidget>(World, UBrowserAssetsWidget::StaticClass());
 	}
 
-	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
+	auto L_Dock = SNew(SDockTab)
+		.TabRole(ETabRole::NumRoles)
 		[
 			SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
@@ -104,6 +90,10 @@ TSharedRef<SDockTab> FInventoryEditorModule::OnRegisterBrowserAssetsTab(const FS
 					BrowserAssetsTab->TakeWidget()
 				]
 		];
+
+	L_Dock->SetTabManager(TabManager);
+
+	return L_Dock;
 }
 
 TSharedRef<SDockTab> FInventoryEditorModule::OnRegisterInventoryTab(const FSpawnTabArgs& SpawnTabArgs) {
@@ -116,27 +106,23 @@ TSharedRef<SDockTab> FInventoryEditorModule::OnRegisterInventoryTab(const FSpawn
 			InventoryTab->Rename(nullptr, GetTransientPackage(), REN_DoNotDirty);
 			InventoryTab = nullptr;
 		}
-		InventoryTab = CreateWidget<UEditorWidget>(World, UEditorWidget::StaticClass());
+		InventoryTab = CreateWidget<UEditorInventoryWidget>(World, UEditorInventoryWidget::StaticClass());
 	}
 
-	if (InventoryTab)
-	{
-		return SNew(SDockTab)
-			.TabRole(ETabRole::NomadTab)
-			[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
+	auto L_Dock = SNew(SDockTab)
+		.TabRole(ETabRole::NumRoles)
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
 			.HAlign(HAlign_Fill)
 			[
 				InventoryTab->TakeWidget()
 			]
-			];
-	}
-	else
-	{
-		return  SNew(SDockTab)
-			.TabRole(ETabRole::NomadTab);
-	}
+		];
+
+	L_Dock->SetTabManager(TabManager);
+
+	return L_Dock;
 }
 
 void FInventoryEditorModule::UpdateRespawnListIfNeeded(TSharedRef<SDockTab> TabBeingClosed)
@@ -158,40 +144,43 @@ TSharedRef<SDockTab> FInventoryEditorModule::OnSpawnPluginTab(const FSpawnTabArg
 {
 	const TSharedRef<SDockTab> NomadTab = SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab);
-		
+
 	NomadTab->SetOnTabClosed(SDockTab::FOnTabClosedCallback::CreateRaw(this, &FInventoryEditorModule::UpdateRespawnListIfNeeded));
+	
+	TabManager = FGlobalTabmanager::Get()->NewTabManager(NomadTab);
 
-	if (!TabManager.IsValid())
-	{
-		TabManager = FGlobalTabmanager::Get()->NewTabManager(NomadTab);
-	}
-
-	if (!TabManagerLayout.IsValid())
-	{
-		TabManagerLayout = FTabManager::NewLayout("InventoryEditorWindow")
-			->AddArea
+	TabManagerLayout = FTabManager::NewLayout("InventoryEditorWindow")
+		->AddArea
+		(
+			FTabManager::NewPrimaryArea()
+			->SetOrientation(Orient_Vertical)
+			->Split
 			(
-				FTabManager::NewPrimaryArea()
-				->SetOrientation(Orient_Vertical)
-				->Split
-				(
-					FTabManager::NewStack()
-					->SetSizeCoefficient(.4f)
-					->AddTab("Inventory", ETabState::OpenedTab)
-				)
-				->Split
-				(
-					FTabManager::NewStack()
-					->SetSizeCoefficient(.4f)
-					->AddTab("BrowserAssets", ETabState::OpenedTab)
-				)
-			);
-	}
+				FTabManager::NewStack()
+				->SetSizeCoefficient(.4f)
+				->AddTab(TabInventoryName, ETabState::OpenedTab)
+			)
+			->Split
+			(
+				FTabManager::NewStack()
+				->SetSizeCoefficient(.4f)
+				->AddTab(TabBrowserAssetsName, ETabState::OpenedTab)
+			)
+		);
+	
+	TabManager.Get()->RegisterTabSpawner(TabInventoryName, FOnSpawnTab::CreateRaw(this, &FInventoryEditorModule::OnRegisterInventoryTab))
+		.SetDisplayName(LOCTEXT("Inventory", "Inventory"))
+		.SetMenuType(ETabSpawnerMenuType::Hidden);
+
+	TabManager.Get()->RegisterTabSpawner(TabBrowserAssetsName, FOnSpawnTab::CreateRaw(this, &FInventoryEditorModule::OnRegisterBrowserAssetsTab))
+		.SetDisplayName(LOCTEXT("BrowserAssets", "BrowserAssets"))
+		.SetMenuType(ETabSpawnerMenuType::Hidden);
 
 	TSharedRef<SWidget> TabContents = TabManager->RestoreFrom(TabManagerLayout.ToSharedRef(), TSharedPtr<SWindow>(),false, EOutputCanBeNullptr::IfNoTabValid).ToSharedRef();
 
 	NomadTab->SetContent(TabContents);
 	MainTab = NomadTab;
+
 	return NomadTab;
 }
 
@@ -227,6 +216,10 @@ void FInventoryEditorModule::ShutdownModule()
 	FAssetToolsModule::GetModule().Get().UnregisterAssetTypeActions(ItemAssetAction.ToSharedRef());
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner("InventoryEditorTabName");
+
+	FLevelEditorModule& LevelEditor = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+	LevelEditor.OnMapChanged().Remove(HandleChangeTabWorld);
+
 }
 
 #undef LOCTEXT_NAMESPACE

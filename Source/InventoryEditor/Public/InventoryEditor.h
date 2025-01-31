@@ -9,6 +9,8 @@ class FInventoryEditorModule : public IModuleInterface
 {
 public:
 
+	FDelegateHandle HandleChangeTabWorld;
+
 	TSharedPtr<class FItemAsset_Action> ItemAssetAction;
 
 	TSharedPtr<FTabManager> TabManager;
@@ -17,7 +19,7 @@ public:
 
 	TWeakPtr<SDockTab> MainTab;
 
-	class UEditorWidget* InventoryTab;
+	class UEditorInventoryWidget* InventoryTab;
 
 	class UBrowserAssetsWidget* BrowserAssetsTab;
 
