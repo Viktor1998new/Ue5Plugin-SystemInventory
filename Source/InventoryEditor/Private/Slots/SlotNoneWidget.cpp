@@ -10,43 +10,26 @@ bool USlotNoneWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 	if (!IsValid(L_Slot))
 		return false;
 
-	FIntPoint L_CurrentPositin = FIntPoint(L_Slot->Transform.Offsets.Left / SizeSlot, L_Slot->Transform.Offsets.Top / SizeSlot);
-	UInventoryComponent* L_Inventory = GetInventory();
+	if (auto L_Operation = Cast<UInventotySlot_Drag>(InOperation)) {
 
-	if (auto Operation = Cast<UEditor_Drag>(InOperation)) {
+		if (auto SlotAsset = Cast<USlotAssetWidget>(L_Operation->Payload))
+		{
+			FIntPoint L_CurrentPositin = FIntPoint(L_Slot->Transform.Offsets.Left / SizeSlot, L_Slot->Transform.Offsets.Top / SizeSlot);
+			UInventoryComponent* L_Inventory = GetInventory();
+			FInventorySlot L_NewSlot;
+			L_NewSlot.ItemAsset = SlotAsset->Asset;
+			L_NewSlot.PositionSlot = L_CurrentPositin;
+			L_NewSlot.Count = 1;
+			L_NewSlot.IsRotate = L_Operation->GetRotateItem();
 
-		if (Operation->NewItem) {
-			FInventorySlot LNewSlot = Operation->Slot;
-			LNewSlot.PositionSlot = L_CurrentPositin;
 			int32 L_Index;
-			L_Inventory->AddSlot(LNewSlot, false, L_Index);
+			return	L_Inventory->AddSlot(L_NewSlot, false, L_Index);
 		}
-		else {
-			if (Operation->Inventory == L_Inventory) {
-				bool OldRotation = Operation->Inventory->GetItem(Operation->Index).IsRotate;
-				auto* L_SlotItem = &Operation->Inventory->GetItem(Operation->Index);
-				L_SlotItem->IsRotate = Operation->IsRotate;
-				if (Operation->Inventory->DropItem(Operation->Index, -1, 1, L_CurrentPositin, true, true)) {
-					if (L_SlotItem->Count != 1) {
-						L_SlotItem->IsRotate = OldRotation;
-					}
-					Operation->Inventory->NewDataSlot.Broadcast(Operation->Index, Operation->GetSlot(), ETypeSetItem::ChangeSlot);
-				}
-				else {
-					L_SlotItem->IsRotate = OldRotation;
-				}
-				Cast<USlotItemWidget>(Operation->Payload)->SetVisible();
-				return true;
-			}
 
-			Operation->Inventory->GetItem(Operation->Index).IsRotate = Operation->IsRotate;
-			Operation->Inventory->SendItem(Operation->Index, L_Inventory, 1, false, L_CurrentPositin);
-			Cast<USlotItemWidget>(Operation->Payload)->SetVisible();
-			return true;
-		}
+		return L_Operation->DropInSlot(L_Slot, SizeSlot);
 	}
 
-	return true;
+	return false;
 }
 
 TSharedRef<SWidget> USlotNoneWidget::RebuildWidget()

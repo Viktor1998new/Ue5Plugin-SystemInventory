@@ -97,7 +97,7 @@ void UInventoryPanel::ReleaseSlateResources(bool bReleaseChildren)
 TSharedRef<SWidget> UInventoryPanel::RebuildWidget()
 {
 	MyPanel = SNew(SConstraintCanvas);
-
+	
 	if (Slots.Num() != 0 && Inventory)
 		for (UPanelSlot* PanelSlot : Slots)
 		{
@@ -107,7 +107,6 @@ TSharedRef<SWidget> UInventoryPanel::RebuildWidget()
 				TypedSlot->BuildSlot(MyPanel.ToSharedRef());
 			}
 		}
-
 	return MyPanel.ToSharedRef();
 }
 

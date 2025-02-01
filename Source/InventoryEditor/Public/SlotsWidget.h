@@ -6,10 +6,9 @@
 #include "Inventory/InventoryComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "InventoryUMG/PanelInventorySlotInterface.h"
-#include "Widgets/Layout/SConstraintCanvas.h"
 #include "SlotsWidget.generated.h"
 
-static float SizeSlot = 32.f;
+static const float SizeSlot = 32.f;
 
 UCLASS()
 class INVENTORYEDITOR_API UItemSettings : public UObject
@@ -27,29 +26,7 @@ public:
 	int32 Count;
 };
 
-UCLASS(NotBlueprintable)
-class INVENTORYEDITOR_API UEditor_Drag : public UDragDropOperation
-{
-	GENERATED_BODY()
-
-public:
-
-	bool NewItem = false;
-	FInventorySlot Slot;
-
-	bool IsRotate;
-
-	UInventoryComponent* Inventory;
-	int32 Index;
-
-	FInventorySlot GetSlot() {
-		return Inventory->GetItem(Index);
-	}
-
-	void RotateItem();
-};
-
-UCLASS(NotBlueprintable)
+UCLASS(NotBlueprintable, NotBlueprintType, hidedropdown)
 class INVENTORYEDITOR_API USlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -84,10 +61,9 @@ class INVENTORYEDITOR_API USlotItemWidget : public USlotWidget, public IPanelInv
 {
 	GENERATED_BODY()
 
-public:
-	
-	UEditor_Drag* operation;
+	class UInventotySlot_Drag* operation;
 
+public:
 	TSharedPtr<class SBorder> ImageItem;
 	TSharedPtr<class STextBlock> NumberText;
 	TSharedPtr<class SMenuAnchor> MenuAnchor;
@@ -106,9 +82,6 @@ protected:
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
-
-	UFUNCTION(BlueprintNativeEvent, Category = "InventoryPanel|Slot")
-	void OnChangedSlot(int32 NewIndex, FInventorySlot NewSlot);
 	virtual void OnChangedSlot_Implementation(int32 NewIndex, FInventorySlot NewSlot) override;
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
@@ -122,7 +95,7 @@ protected:
 
 };
 
-UCLASS(NotBlueprintable)
+UCLASS(NotBlueprintable, NotBlueprintType)
 class INVENTORYEDITOR_API UVisualDragWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -139,16 +112,14 @@ protected:
 };
 
 UCLASS()
-class INVENTORYEDITOR_API USlotAssetWidget : public USlotWidget
+class INVENTORYEDITOR_API USlotAssetWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-private:
+	class UInventotySlot_Drag* operation;
 
-	class UItemAsset* Asset;
-
-	UEditor_Drag* operation;
 public:
+	class UItemAsset* Asset;
 
 	TSharedPtr<class SImage> ItemIcon;
 	TSharedPtr<class STextBlock> NameAsset;
@@ -165,7 +136,7 @@ protected:
 
 };
 
-UCLASS(NotBlueprintable)
+UCLASS(NotBlueprintable, NotBlueprintType)
 class INVENTORYEDITOR_API UMenuContextItemWidget : public UUserWidget
 {
 

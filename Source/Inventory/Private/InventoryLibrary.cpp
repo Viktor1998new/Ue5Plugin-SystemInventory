@@ -30,9 +30,9 @@ FIntPoint UInventoryLibrary::GetSlotSize(FInventorySlot Slot)
 	return Slot.GetSize();
 }
 
-FItemData UInventoryLibrary::GetItemData(FInventorySlot Slot)
+FItemData& UInventoryLibrary::GetItemData(FInventorySlot Slot)
 {
-	return Slot.ItemAsset->SlotItemData;
+	return Slot.GetData();
 }
 
 

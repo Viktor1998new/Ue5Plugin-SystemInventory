@@ -48,17 +48,3 @@ TSharedRef<SWidget> UVisualDragWidget::RebuildWidget()
 {
 	return SizeBox.ToSharedRef();
 }
-
-void UEditor_Drag::RotateItem() {
-	IsRotate = !IsRotate;
-
-	if (NewItem) {
-		Slot.IsRotate = IsRotate;
-		Cast<class UVisualDragWidget>(DefaultDragVisual)->SetItem(Slot.ItemAsset->SlotItemData.ImageItem, Slot.GetSize() * SizeSlot);
-	}
-	else {
-		auto Item_Slot = GetSlot();
-		Item_Slot.IsRotate = IsRotate;
-		Cast<class UVisualDragWidget>(DefaultDragVisual)->SetItem(Item_Slot.ItemAsset->SlotItemData.ImageItem, Item_Slot.GetSize() * SizeSlot);
-	}
-}

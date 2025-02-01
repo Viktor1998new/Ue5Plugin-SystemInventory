@@ -1,8 +1,7 @@
 //Copyright(c) 2022 - 2025, Viktor.F.P
 #pragma once
 #include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/ScriptMacros.h"
+#include "Blueprint/DragDropOperation.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
 #include "Layout/Margin.h"
 #include "UObject/Interface.h"
@@ -10,8 +9,49 @@
 #include "Inventory/InventoryComponent.h"
 #include "InventoryPanelSlot.generated.h"
 
+UCLASS()
+class INVENTORY_API UInventotySlot_Drag : public UDragDropOperation
+{
+	GENERATED_UCLASS_BODY()
+
+	UPROPERTY()
+		bool bRotateItem;
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag and Drop|InventotyDrag", meta = (ExposeOnSpawn = "true"))
+		UInventoryComponent* Inventory;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag and Drop|InventotyDrag", meta = (ExposeOnSpawn = "true"))
+		int32 Index;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag and Drop|InventotyDrag", meta = (ExposeOnSpawn = "true"))
+		int32 Count = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drag and Drop|InventotyDrag", meta = (ExposeOnSpawn = "true"))
+		bool Change;
+
+	FInventorySlot GetSlot() {
+		return Inventory->GetItem(Index);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Drag and Drop|InventotyDrag")
+		bool DropInSlot(UInventoryPanelSlot* Slot , float SizeSlot);
+
+	UFUNCTION(BlueprintCallable, Category = "Drag and Drop|InventotyDrag")
+		void SetRotateItem(bool NewRotate);
+		
+	UFUNCTION(BlueprintCallable, Category = "Drag and Drop|InventotyDrag")
+		void RotateItem();
+		
+	UFUNCTION(BlueprintPure, Category = "Drag and Drop|InventotyDrag")
+		bool GetRotateItem() const {
+			return bRotateItem; 
+		}
+};
+
 USTRUCT(BlueprintType)
-struct FSlotTransformData
+struct INVENTORY_API FSlotTransformData
 {
 	GENERATED_USTRUCT_BODY()
 

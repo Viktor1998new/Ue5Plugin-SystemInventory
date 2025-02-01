@@ -50,9 +50,9 @@ FReply USlotAssetWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, co
 
 void USlotAssetWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	operation = NewObject<UEditor_Drag>();
+	operation = NewObject<UInventotySlot_Drag>();
 
-	operation->NewItem = true;
+	operation->Payload = this;
 	operation->Pivot = EDragPivot::TopLeft;
 
 	auto DragVisual = CreateWidget<UVisualDragWidget>(this);
@@ -66,12 +66,6 @@ void USlotAssetWidget::NativeOnDragDetected(const FGeometry& InGeometry, const F
 
 	operation->DefaultDragVisual = DragVisual;
 
-	FInventorySlot NewSlot;
-	NewSlot.ItemAsset = Asset;
-	NewSlot.Count = 1;
-
-	operation->Slot = NewSlot;
-
 	OutOperation = operation;
 }
 
@@ -80,6 +74,16 @@ FReply USlotAssetWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKey
 	if (InKeyEvent.GetKey() == EKeys::LeftShift) {
 		if (IsValid(operation)) {
 			operation->RotateItem();
+
+			FIntPoint L_SizeItem;
+			if (operation->bRotateItem) {
+				L_SizeItem = FIntPoint(Asset->SlotItemData.SizeSlot.Y, Asset->SlotItemData.SizeSlot.X);
+			}
+			else {
+				L_SizeItem = Asset->SlotItemData.SizeSlot;
+			}
+
+			Cast<class UVisualDragWidget>(operation->DefaultDragVisual)->SetItem(Asset->SlotItemData.ImageItem, L_SizeItem * SizeSlot);
 		}
 	}
 	return FReply::Handled();

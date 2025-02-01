@@ -43,6 +43,11 @@ struct INVENTORY_API FInventorySlot
 	}
 
 	FIntPoint GetSize();
+	
+	FIntPoint GetSize(bool NewRotate);
+
+	FItemData& GetData();
+
 };
 
 USTRUCT(BlueprintType)
@@ -166,7 +171,7 @@ public:
 	/*the function sends an item from the current inventory to another one
 	 Use only in Server*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-		bool SendItem(int32 Index, class UInventoryComponent* ToIntentory, int32 Count, bool FindSlot, FIntPoint Position);
+		bool SendItem(int32 Index, class UInventoryComponent* ToIntentory, int32 Count, bool FindSlot, FIntPoint Position, bool Rotate);
 
 	/*the function checks whether the element can be placed in this position*/
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -176,7 +181,7 @@ public:
 		void SetRotateSlot(int32 Index, bool NewRotate);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory|Slot")
-		bool DropItem(int32 IndexItem, int32 ToIndex, int32 Count, FIntPoint ToPosition, bool Change, bool FindPosition);
+		bool DropItem(int32 IndexItem, int32 ToIndex, int32 Count, FIntPoint ToPosition, bool Change, bool FindPosition, bool Rotate);
 
 	UFUNCTION(Client, Reliable)
 		void ClientRPC_EventSetItem(int32 Index, FInventorySlot NewData, ETypeSetItem Type);
@@ -192,6 +197,12 @@ protected:
 
 private:
 	int GetCountRow(bool IsEnd) const;
+
+	bool ChangeItem(int32 IndexItem, int32 ToIndex, bool FindPosition);
+
+	bool StackItem(int32 IndexItem, int32 ToIndex, int32 Count);
+
+	bool SetPositionItem(int32 IndexItem, int32 Count, bool Rotate, FIntPoint NewPosition);
 
 };
 

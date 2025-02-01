@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Components/PanelWidget.h"
+#include "Widgets/SWidget.h"
 #include "Layout/Margin.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
 #include "Inventory/InventoryComponent.h"

@@ -14,6 +14,7 @@
 #include "Components/ScaleBox.h"
 #include "Components/ScaleBoxSlot.h"
 #include "Brushes/SlateColorBrush.h"
+#include <InventoryUMG/InventoryPanelSlot.h>
 
 #define HasInventoryFlag(Flag) UInventorySettings::Get()->HasInventoryFlag(Flag)
 
@@ -55,11 +56,16 @@ bool UInventoryWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
     if (Panel != 1)
         return false;
 
-    if (auto Operation = Cast<UEditor_Drag>(InOperation)) {
+    if (auto L_Operation = Cast<UInventotySlot_Drag>(InOperation)) {
 
-        if (Operation->NewItem) {
+        if (auto SlotAsset = Cast<USlotAssetWidget>(L_Operation->Payload))
+        {
+            FInventorySlot L_NewSlot;
+            L_NewSlot.ItemAsset = SlotAsset->Asset;
+            L_NewSlot.Count = 1;
+            L_NewSlot.IsRotate = L_Operation->GetRotateItem();
             int32 L_Index;
-            return Inventory->AddSlot(Operation->Slot, true, L_Index);
+            return Inventory->AddSlot(L_NewSlot, true, L_Index);   
         }
     }
 

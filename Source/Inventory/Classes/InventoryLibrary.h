@@ -120,7 +120,7 @@ public:
         static FIntPoint GetSlotSize(FInventorySlot Slot);
 
     UFUNCTION(BlueprintPure, Category = "InventoryLibrary")
-        static FItemData GetItemData(FInventorySlot Slot);
+        static FItemData& GetItemData(FInventorySlot Slot);
         
     UFUNCTION(BlueprintPure, Category = "Inventory")
         static UInventorySettings* GetInventorySetting();

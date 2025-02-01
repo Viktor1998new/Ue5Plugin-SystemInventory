@@ -31,7 +31,7 @@ FReply USlotItemWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, con
 
 void USlotItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
-	operation = NewObject<UEditor_Drag>();
+	operation = NewObject<UInventotySlot_Drag>();
 
 	operation->Pivot = EDragPivot::TopLeft;
 
@@ -39,21 +39,18 @@ void USlotItemWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FP
 
 	operation->Payload = this;
 
-	UItemAsset* L_Asset = Item_Slot.ItemAsset;
-	DragVisual->SetItem(L_Asset->SlotItemData.ImageItem, Item_Slot.GetSize() * SizeSlot);
+	DragVisual->SetItem(Item_Slot.GetData().ImageItem, Item_Slot.GetSize() * SizeSlot);
 
 	operation->DefaultDragVisual = DragVisual;
 
 	operation->Index = Item_Index;
-	operation->IsRotate = Item_Slot.IsRotate;
+	operation->Count = Item_Slot.Count;
+	operation->SetRotateItem(Item_Slot.IsRotate); 
 
 	operation->Inventory = Cast<UInventoryPanel>(GetParent())->Inventory;
 
-	if (Item_Slot.Count - 1 <= 0)
-	{
-		SetVisibility(ESlateVisibility::HitTestInvisible);
-		ImageItem->SetVisibility(TAttribute<EVisibility>(EVisibility::Hidden));
-	}
+	SetVisibility(ESlateVisibility::HitTestInvisible);
+	ImageItem->SetVisibility(TAttribute<EVisibility>(EVisibility::Hidden));
 
 	OutOperation = operation;
 }
@@ -68,6 +65,7 @@ FReply USlotItemWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyE
 	if (InKeyEvent.GetKey() == EKeys::LeftShift) {
 		if (IsValid(operation)) {
 			operation->RotateItem();
+			Cast<class UVisualDragWidget>(operation->DefaultDragVisual)->SetItem(Item_Slot.GetData().ImageItem, Item_Slot.GetSize(operation->bRotateItem) * SizeSlot);
 		}
 	}
 	return FReply::Handled();
@@ -94,41 +92,15 @@ void USlotItemWidget::OnChangedSlot_Implementation(int32 NewIndex, FInventorySlo
 
 bool USlotItemWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-
 	bool IsSussen = false;
 	if (UInventoryPanelSlot* L_PanelSlot = Cast<UInventoryPanelSlot>(Slot)) {
 
-		if (UEditor_Drag* Drag = Cast<UEditor_Drag>(InOperation)) {
+		if (auto Drag = Cast<UInventotySlot_Drag>(InOperation)) {
 
-			if (Drag->NewItem)
-				return false;
+			if (Cast<USlotItemWidget>(Drag->Payload)) {
 
-			if (auto L_Inventory = GetInventory()) {
-				if (L_Inventory == Drag->Inventory) {
-					Drag->Inventory->DropItem(Drag->Index, Item_Index, 1, FIntPoint(), true, true);
-
-					IsSussen = true;
-				}
-				else {
-					FInventorySlot Drop_Slot = Drag->GetSlot();
-
-					bool IsQAsset = Drop_Slot.ItemAsset == Item_Slot.ItemAsset;
-					bool IsQData = Drop_Slot.ItemData == Item_Slot.ItemData;
-
-					if (IsQAsset && IsQData && Drop_Slot.ItemAsset->SlotItemData.StackItem) {
-						FInventorySlot New_Slot = Item_Slot;
-						New_Slot.IsRotate = Drag->IsRotate;
-						New_Slot.Count += 1;
-						bool IsSet = L_Inventory->SetSlot(Item_Index, New_Slot);
-
-						if (IsSet)
-							IsSussen = Drag->Inventory->RemoveItem(Drag->Index, 1);
-					}
-				}
-			}
-
-			if (IsValid(Drag->Payload)) {
-				Cast<USlotItemWidget>(Drag->Payload)->SetVisible();
+				IsSussen = Drag->DropInSlot(L_PanelSlot, SizeSlot);
+				Cast<USlotItemWidget>(Drag->Payload)->SetVisible();	
 			}
 		}
 	}

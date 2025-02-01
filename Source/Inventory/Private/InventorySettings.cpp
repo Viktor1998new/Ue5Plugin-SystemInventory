@@ -6,7 +6,7 @@
 UInventorySettings::UInventorySettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	InventoryFlags = uint8(EInventoryFlag::Stack | EInventoryFlag::LimitY);
+	InventoryFlags = uint8(EInventoryFlag::Position | EInventoryFlag::Size | EInventoryFlag::LimitY);
 }
 
 void UInventorySettings::PostInitProperties()

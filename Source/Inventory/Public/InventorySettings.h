@@ -10,10 +10,9 @@ enum class EInventoryFlag : uint8
 
     Position = 0x01 << 0,
     Size     = 0x01 << 1,
-    Stack    = 0x01 << 2,
-    Mass     = 0x01 << 3,
-    LimitY   = 0x01 << 4,
-    OnlyX    = 0x01 << 5
+    Mass     = 0x01 << 2,
+    LimitY   = 0x01 << 3,
+    OnlyX    = 0x01 << 4
 };
 
 ENUM_CLASS_FLAGS(EInventoryFlag)
